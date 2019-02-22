@@ -20,6 +20,7 @@ while (my $line = <IN>)
   foreach my $subfield (@subfields)
     {
     $subfield =~ s/%/[A-Z]/g;
+    $subfield =~ s/#/[0-9]/g;
     print OUT "{\"\^$subfield\", \"$desc\"},\n";
     }
   }

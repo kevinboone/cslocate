@@ -1,29 +1,35 @@
-<h1>cslocate</h1>
-
-v0.0.1 
-
-<h2>What is this?</h2>
-
-<code>cslocate</code> is a simple command-line utility for Linux and
-similar platforms, that attempts to find the location (country or
-region) corresponding to an amateur radio callsign. It can either
-print the best match -- as it understands it -- or all potential 
-matches.
-<p/>
-The program is written in ANSI-standard C, and should build 
-easily on any Linux-like system with gcc or a similar C compiler.
-
-<h2>Building the program</h2>
-
-
-
-<h2>Author and copyright</h2>
-
-<code>cslocate</code> is written and maintained by Kevin Boone, 
-but it uses data provided by Martin Kratoska and others as part of
-the CQRLog project. The CQRLog files are open source under the terms
-of the GPL, version 2.0; this utility is open souce under the terms
-of the GPL, version 3.0.
-<p/>
-Please report bugs, etc., to kevin@bearontheair.co.uk
-
+<h1 id="cslocate">cslocate</h1>
+<p>v0.0.1 </p>
+<h2 id="what-is-this-">What is this?</h2>
+<p><code>cslocate</code> is a simple command-line utility for Linux and similar platforms, that attempts to find the location (country or region) corresponding to an amateur radio callsign. It can either print the best match -- as it understands it -- or all potential matches.  </p>
+<p>Of course, there are many potential ways to look up a callsign in online databases. This program is specifically written to work without Internet access -- for portable radio operation, for eample.</p>
+<p>The program is written in ANSI-standard C, and should build easily on any Linux-like system with gcc or a similar C compiler.</p>
+<h2 id="usage">Usage</h2>
+<p>To find the location of callsign, run <code>cslocate</code> like this:</p>
+<pre><code>$ cslocate m6KXB 
+M6KXB: England, Foundation License
+</code></pre><p>Note that callsigns are not case-sensitive, although they are usually written with upper-case letters.</p>
+<p>To list all potential matching locations, use the <code>-a</code> (or <code>--all</code>) switch:</p>
+<pre><code>$ cslocate --all EA5XX 
+EA5XX: (3) Spain, Valencia (HF)
+EA5XX: (3) Spain, Valencia (Full License)
+EA5XX: (2) Spain
+</code></pre><p>The number in brackets is the number of characters in the supplied callsign that matched the callsign template for the location. Generally, a larger number indicates a better match.</p>
+<p>To print the minimum amount of information -- just the country and nothing<br>else:</p>
+<p>  $ cslocate -q M6KXB<br>  England</p>
+<h2 id="building-the-program">Building the program</h2>
+<p>Get the C source code from <a href="https://github.com/kevinboone/cslocate">https://github.com/kevinboone/cslocate</a>.</p>
+<p>If your system has <code>curl</code> and <code>perl</code>, do </p>
+<pre><code>$ ./scripts/get_data.sh
+</code></pre><p>To download and parse the latest data files. If not, you can use the versions supplied with the program, although they may be out of date.</p>
+<p>Then</p>
+<pre><code>$ make
+$ sudo make install
+</code></pre><h2 id="limitations">Limitations</h2>
+<p>Many callsigns are genuinely ambgiguous, partly because national boundaries have a certain fluidity. Accuracy cannot be guaranteed. </p>
+<p>The program does not even attempt to determine whether a callsign has ever been issued, or even if it is valid -- it just matches the characters against a set of templates.</p>
+<p>Sometimes the <code>--all</code> switch will cause the same data to be displayed more than once, if multiple templates match.</p>
+<p>The <code>-q</code> switch will attempt to parse the country name out of the supplied licence description. However, this will not always succeed -- the data the program uses specifically describes regions, and parsing out just the country is not a well-defined process.</p>
+<h2 id="author-and-copyright">Author and copyright</h2>
+<p><code>cslocate</code> is written and maintained by Kevin Boone, but it uses data provided by Martin Kratoska and others as part of the CQRLog project. The CQRLog files are open source under the terms of the GPL, version 2.0; this utility is open souce under the terms of the GPL, version 3.0.</p>
+<p>Please report bugs, etc., to <a href="mailto:kevin@bearontheair.co.uk">kevin@bearontheair.co.uk</a></p>

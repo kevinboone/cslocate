@@ -13,23 +13,41 @@
 #include "area.h" 
 #include "cslocate.h" 
 
+/* Try to extract just the country part from the description field.
+ *   This is generally not very reliable, as the data in the regions
+ *   table was not really designed to be parsed this way */
+void truncate_to_country (char *desc)
+  {
+  char *p = strchr (desc, ',');
+  if (p) *p = 0; 
+  p = strstr (desc, " -");
+  if (p) *p = 0;
+  p = strstr (desc, " VHF C");
+  if (p) *p = 0;
+  }
+
+/* Callback function for cslocate_get_all_matches -- just
+ *   dump the data */
 void lookup_callback (const char *callsign, const char *desc, 
      int len, void *user_data)
   {
   printf ("%s: (%d) %s\n", callsign, len, desc);
   }
 
+/* Start here */
 int main (int argc, char **argv)
   {
   BOOL show_version = FALSE;
   BOOL show_usage = FALSE;
   BOOL show_all = FALSE;
+  BOOL quiet = FALSE;
 
   static struct option long_options[] = 
    {
      {"version", no_argument, NULL, 'v'},
-     {"help", no_argument, NULL, '?'},
      {"all", no_argument, NULL, 'a'},
+     {"help", no_argument, NULL, '?'},
+     {"quiet", no_argument, NULL, 'q'},
      {0, 0, 0, 0}
    };
 
@@ -37,7 +55,7 @@ int main (int argc, char **argv)
   while (1)
    {
    int option_index = 0;
-   opt = getopt_long (argc, argv, "v?a",
+   opt = getopt_long (argc, argv, "v?aq",
      long_options, &option_index);
 
    if (opt == -1) break;
@@ -51,6 +69,8 @@ int main (int argc, char **argv)
           show_usage = TRUE;
         else if (strcmp (long_options[option_index].name, "all") == 0)
           show_all = TRUE;
+        else if (strcmp (long_options[option_index].name, "quiet") == 0)
+          quiet = TRUE;
 	else
           exit (-1);
         break;
@@ -58,6 +78,7 @@ int main (int argc, char **argv)
      case 'v': show_version = TRUE; break;
      case '?': show_usage = TRUE; break;
      case 'a': show_all = TRUE; break;
+     case 'q': quiet = TRUE; break;
      default:  exit(-1);
      }
    }
@@ -66,6 +87,7 @@ int main (int argc, char **argv)
     {
     printf ("Usage %s [options]\n", argv[0]);
     printf ("  -a, --all       show all matches\n");
+    printf ("  -q, --quiet     print only country\n");
     printf ("  -v, --version   show version information\n");
     printf ("  -?              show this message\n");
     exit (0);
@@ -98,7 +120,13 @@ int main (int argc, char **argv)
     char *desc = cslocate_get_best_match (cs);
     if (desc)
       {
-      printf ("%s: %s\n", cs, desc);
+      if (quiet)
+        {
+        truncate_to_country (desc); 
+        printf ("%s\n", desc);
+        }
+      else
+        printf ("%s: %s\n", cs, desc);
       free (desc);
       }
     else
